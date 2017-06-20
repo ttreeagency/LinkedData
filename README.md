@@ -10,6 +10,14 @@ Installation
 
     composer require ttree/linkeddata
 
+Features
+--------
+
+- [x] Support simple document
+- [x] Use EEL queries
+- [x] Support relation between document(s)
+- [ ] Validation of the generated LinkedData
+
 Usage
 -----
 
@@ -22,7 +30,7 @@ Each Session can have a dedicated Location:
         TtreeLinkedData:Generator:
           default:
             context:
-              sessions: "${q(node).children('sessions').children('[instanceof Ttree.AtelierAnnedominiqueCh:Session]').sort('begin', 'ASC').get()}"
+              sessions: "${q(node).children('sessions').children('[instanceof Your.Package:Session]').sort('begin', 'ASC').get()}"
               nextSessions: "${sessions ? q(sessions).filterByDate('end', Date.now()).get() : null}"
               description: "${q(node).children('main').find('[instanceof Neos.NodeTypes:Text]').get(0)}"
             fragment:
