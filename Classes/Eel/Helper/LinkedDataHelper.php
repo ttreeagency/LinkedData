@@ -36,6 +36,11 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
         );
     }
 
+    public function renderRaw(array $data): string
+    {
+        return $this->wrap($data);
+    }
+
     public function list(array $collection, $preset = 'default', bool $withContext = true): array
     {
         $data = array_map(function (NodeInterface $node) use ($preset, $withContext) {
