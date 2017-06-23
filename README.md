@@ -3,7 +3,7 @@
 This package extend the Neos Content Respository Node Type configuration to convert
 Node or collection of Nodes to JSON-LD.
 
-**This package is under development and API can change, is you have suggestions/problems, please open an issue**
+**This package is in alpha status, feel free to open issues if you have any suggestion, problem, ...**
 
 Installation
 ------------
@@ -18,8 +18,8 @@ Features
 - [x] Support relation between document(s)
 - [ ] Validation of the generated LinkedData
 
-Usage
------
+Add presets to your Node Type configuration
+-------------------------------------------
 
 First you need to edit your Node Type configuration (NodeTypes.yaml), the example bellow is for
 a course (Workshop) that can contains many sessions (Course Instance in the Schema.org terminology). 
@@ -73,13 +73,98 @@ Each Session can have a dedicated Location:
                 postalCode: "${q(node).property('postalCode')}"
                 streetAddress: "${q(node).property('streetAddress')}"
   
-Then you can render the JSON-LD graph from any Workshop page, like this:
+You can use multiple presets (```default``` is the preset name). Most ```LinkedData``` EEL helper accept a preset paramater.
 
-    prototype(Neos.Neos:Page) {
+Each presets contains two section, the ```context``` configuration and the linked data ```fragment```.
+
+## Understanding ```context```
+
+The context contains a list of key value pairs. All values are available in the EEL context during expression parsing.
+
+## Understanding ```fragment```
+
+The framgment contains the template of the JSON-LD graph. The template can be nested. The value of each keys can be a static
+string or an EEL expression (see bellow to the list of EEL helpers available in the package).
+
+## Render the JSON-LD Graph
+
+To render the JSON-LD graph from all Workshop pages:
+
+    prototype(Your.Package:WorkshopDocument) {
         head.linkedData = Neos.Fusion:Array {
             workshop = ${LinkedData.render(documentNode, 'default')}
         }
     }
+
+Render JSON-LD from Settings or custom EEL helpers
+--------------------------------------------------
+
+In some case you can render static JSON-LD (like Organization or Website) and need to use custom EEL helper to prepare the data.
+
+    Your:
+      Package:
+        linkedData:
+          website:
+            @context: http://schema.org
+            @type: WebSite
+            @id: '#website'
+            url: http://yourdomain.com/
+            name: Your website name
+            potentialAction:
+                @type: SearchAction
+                target:http://yourdomain.com/?s={search_term_string}
+                "query-input": "required name=search_term_string"
+            }
+          organization:
+            @context: http://schema.org
+            @type: Organization
+            @id: "#organization"
+            url: http://yourdomain.com/
+            name: Your organization name
+
+The ```Website``` and ```Organization``` needs to be rendered on the homepage only:
+
+    prototype(Your.Package:HomeDocument) {
+        head.linkedData = Neos.Fusion:Array {
+            website = ${LinkedData.renderRaw(Configuration.setting('Your.Package.linkedData.website'))}
+            organization = ${LinkedData.renderRaw(Configuration.setting('Your.Package.linkedData.organization'))}
+        }
+    }
+
+Replace the ```Configuration``` EEL helper by your own if you need dynamic data.
+
+Available EEL Helpers
+---------------------
+
+## LinkedData.render
+
+    LinkedData.render(NodeInterface $node, $preset = 'default'): string
+
+This helper accept a ```NodeInterface``` instance and preset name. The helper will render the full JSON-LD graph 
+and output a valid HTML5 script tag.
+
+## LinkedData.renderRaw
+
+    LinkedData.renderRaw(array $data): string
+
+This helper accept an array. The helper will render the full JSON-LD graph and output a valid HTML5 script tag.
+
+## LinkedData.list
+
+    LinkedData.list(array $collection, $preset = 'default', bool $withContext = true): array
+
+This helper a collection of ```NodeInterface``` instance, a preset name and boolean switch to print of not the ```@context``` key. The helper will return an array of the JSON-LD graph.
+
+You can use this helper in your preset configuration to render a one to one/many relation (see the hasCourseInstance in the default preset for the Your.Package:Workshop node type.)
+
+## LinkedData.item
+
+    LinkedData.item(NodeInterface $node, $preset = 'default', bool $withContext = true): array
+
+This helper a ```NodeInterface``` instance, a preset name and boolean switch to print of not the ```@context``` key. The helper will return an array of the JSON-LD graph.
+
+You can use this helper in your preset configuration to render a one to one relation.
+
 
 Acknowledgments
 ---------------
