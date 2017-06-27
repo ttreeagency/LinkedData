@@ -113,8 +113,7 @@ In some case you can render static JSON-LD (like Organization or Website) and ne
             potentialAction:
                 @type: SearchAction
                 target:http://yourdomain.com/?search[word]={search_term_string}
-                "query-input": "required name=search_term_string"
-            }
+                "query-input": "required name=search_term_string"            
           organization:
             @context: http://schema.org
             @type: Organization
