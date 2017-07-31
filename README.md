@@ -86,15 +86,33 @@ The context contains a list of key value pairs. All values are available in the 
 The framgment contains the template of the JSON-LD graph. The template can be nested. The value of each keys can be a static
 string or an EEL expression (see bellow to the list of EEL helpers available in the package).
 
-## Render the JSON-LD Graph
+## Render the JSON-LD Graph in the HEAD section
 
 To render the JSON-LD graph from all Workshop pages:
 
     prototype(Your.Package:WorkshopDocument) {
         head.linkedData = Neos.Fusion:Array {
-            workshop = ${LinkedData.render(documentNode, 'default')}
+            document = ${LinkedData.render(documentNode, 'default')}
         }
     }
+
+With this snippet, Neos will render automatically the JSON-LD content in hte HEAD section of your document.
+
+## Render the JSON-LD Graph inside your document BODY
+
+You can also render JSON-LD inside the body of your document, in the case, the prototype ```Ttree.LinkedData:Decorator``` can be useful.
+
+Let's say you have a prototype to render your Workshop page content, name ```Your.Package:WorkshopDocument```, 
+the following snippet will add the JSON-LD after your title.
+
+	Your.Package:WorkshopDocument.@process.jsonld = Ttree.LinkedData:Decorator
+
+By default this prototype use the default preset and the current document, but you can configure it:
+
+	Your.Package:WorkshopDocument.@process.jsonld = Ttree.LinkedData:Decorator {
+		preset = 'myCustomPreset'
+		node = ${node}
+	}
 
 Render JSON-LD from Settings or custom EEL helpers
 --------------------------------------------------

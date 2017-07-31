@@ -1,0 +1,10 @@
+namespace: Fusion = Neos.Fusion
+
+prototype(Ttree.LinkedData:Decorator) < prototype(Fusion:Value) {
+	value = ${value}
+
+	preset = 'default'
+	node = ${documentNode}
+
+	value.@process.jsonld = ${value + LinkedData.render(this.node, this.preset)}
+}
