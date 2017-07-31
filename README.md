@@ -34,8 +34,8 @@ Each Session can have a dedicated Location:
               nextSessions: "${sessions ? q(sessions).filterByDate('end', Date.now()).get() : null}"
               description: "${q(node).children('main').find('[instanceof Neos.NodeTypes:Text]').get(0)}"
             fragment:
-              @context: http://schema.org
-              @type: Course
+              '@context': http://schema.org
+              '@type': Course
               name: "${q(node).property('title')}"
               description: "${String.stripTags(String.cropAtSentence(q(description).property('text'), 180, '...'))}"
               hasCourseInstance: "${nextSessions ? LinkedData.List(nextSessions, preset, false) : null}"
@@ -50,8 +50,8 @@ Each Session can have a dedicated Location:
               course: "${q(node).closest('[instanceof Neos.Neos:Document]').get(0)}"
               description: "${q(course).children('main').find('[instanceof Neos.NodeTypes:Text]').get(0)}"
             fragment:
-              @context: http://schema.org
-              @type: CourseInstance
+              '@context': http://schema.org
+              '@type': CourseInstance
               name: "${q(course).property('title')}"
               description: "${String.stripTags(String.cropAtSentence(q(description).property('text'), 180, '...'))}"
               startDate: "${Date.format(q(node).property('begin'), ISO8601)}"
@@ -63,8 +63,8 @@ Each Session can have a dedicated Location:
         TtreeLinkedData:Generator:
           default:
             fragment:
-              @context: http://schema.org
-              @type: Place
+              '@context': http://schema.org
+              '@type': Place
               name: "${q(node).property('title')}"
               address:
                 @type: PostalAddress
@@ -105,20 +105,19 @@ In some case you can render static JSON-LD (like Organization or Website) and ne
       Package:
         linkedData:
           website:
-            @context: http://schema.org
-            @type: WebSite
-            @id: '#website'
+            '@context': http://schema.org
+            '@type': WebSite
+            '@id': '#website'
             url: http://yourdomain.com/
             name: Your website name
             potentialAction:
-                @type: SearchAction
-                target:http://yourdomain.com/?s={search_term_string}
-                "query-input": "required name=search_term_string"
-            }
+			  '@type': SearchAction
+			  target: http://yourdomain.com/?s={search_term_string}
+			  query-input: "required name=search_term_string"
           organization:
-            @context: http://schema.org
-            @type: Organization
-            @id: "#organization"
+            '@context': http://schema.org
+            '@type': Organization
+            '@id': "#organization"
             url: http://yourdomain.com/
             name: Your organization name
 
