@@ -3,8 +3,6 @@
 This package extend the Neos Content Respository Node Type configuration to convert
 Node or collection of Nodes to JSON-LD.
 
-**This package is in alpha status, feel free to open issues if you have any suggestion, problem, ...**
-
 Installation
 ------------
 
