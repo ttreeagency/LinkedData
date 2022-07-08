@@ -1,6 +1,4 @@
-namespace: Fusion = Neos.Fusion
-
-prototype(Ttree.LinkedData:Decorator) < prototype(Fusion:Value) {
+prototype(Ttree.LinkedData:Decorator) < prototype(Neos.Fusion:Value) {
 	value = ${value}
 
 	preset = 'default'
