@@ -28,8 +28,10 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
      * @var EelEvaluatorInterface
      */
     protected $eelEvaluator;
+    #[\Neos\Flow\Annotations\Inject]
+    protected \Neos\ContentRepositoryRegistry\ContentRepositoryRegistry $contentRepositoryRegistry;
 
-    public function render(NodeInterface $node, $preset = 'default'): string
+    public function render(\Neos\ContentRepository\Core\Projection\ContentGraph\Node $node, $preset = 'default'): string
     {
         return $this->wrap(
             $this->item($node, $preset)
@@ -43,7 +45,7 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
 
     public function list(array $collection, $preset = 'default', bool $withContext = true): array
     {
-        $data = array_map(function (NodeInterface $node) use ($preset, $withContext) {
+        $data = array_map(function (\Neos\ContentRepository\Core\Projection\ContentGraph\Node $node) use ($preset, $withContext) {
             return $this->item($node, $preset, $withContext);
         }, $collection);
 
@@ -60,12 +62,13 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
         return $data;
     }
 
-    public function item(NodeInterface $node, $preset = 'default', bool $withContext = true): array
+    public function item(\Neos\ContentRepository\Core\Projection\ContentGraph\Node $node, $preset = 'default', bool $withContext = true): array
     {
         $configuration = $this->getConfiguration($node, $preset);
         $fragment = $configuration['fragment'];
         if ($configuration === null) {
-            throw new Exception(sprintf('Missing options.TtreeLinkedData:Generator configuration for the current node type (%s)', $node->getNodeType()), 1497984924);
+            $contentRepository = $this->contentRepositoryRegistry->get($node->contentRepositoryId);
+            throw new Exception(sprintf('Missing options.TtreeLinkedData:Generator configuration for the current node type (%s)', $contentRepository->getNodeTypeManager()->getNodeType($node->nodeTypeName)->name), 1497984924);
         }
 
         $contextVariables = $this->prepareContextVariables($configuration, $node, $preset);
@@ -84,7 +87,7 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
         return $fragment;
     }
 
-    protected function prepareContextVariables(array $configuration, NodeInterface $node, string $preset)
+    protected function prepareContextVariables(array $configuration, \Neos\ContentRepository\Core\Projection\ContentGraph\Node $node, string $preset)
     {
         $contextVariables = [
             'node' => $node,
@@ -115,9 +118,10 @@ final class LinkedDataHelper implements ProtectedContextAwareInterface
         }
     }
 
-    protected function getConfiguration(NodeInterface $node, $preset = 'default')
+    protected function getConfiguration(\Neos\ContentRepository\Core\Projection\ContentGraph\Node $node, $preset = 'default')
     {
-        return $node->getNodeType()->getConfiguration($this->configurationPath . '.' . $preset);
+        $contentRepository = $this->contentRepositoryRegistry->get($node->contentRepositoryId);
+        return $contentRepository->getNodeTypeManager()->getNodeType($node->nodeTypeName)->getConfiguration($this->configurationPath . '.' . $preset);
     }
 
     protected function isEelExpression(string $expression)

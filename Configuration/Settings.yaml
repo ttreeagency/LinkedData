@@ -5,4 +5,4 @@ Neos:
         Ttree.LinkedData: true
   Fusion:
     defaultContext:
-      LinkedData: 'Ttree\LinkedData\Eel\Helper\LinkedDataHelper'
+      LinkedData: Ttree\LinkedData\Eel\Helper\LinkedDataHelper
